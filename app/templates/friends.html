@@ -8,6 +8,7 @@
                 <div class="card-body">
                     <h1 class="card-text"><span class="fa fa-user-plus"></span>&nbsp;Add a new friend</h1>
                     <form action="" method="POST" novalidate>
+                        {{ form.csrf_token }}
                         {{ wtf.form_field(form.username) }}
                         {{ wtf.form_field(form.submit, class="btn btn-primary") }}
                     </form>

@@ -17,6 +17,7 @@
                 <div class="card-body">
                     <h5 class="card-title">Access an existing profile</h5>
                     <form action="" method="POST" novalidate>
+                        {{ form.csrf_token }}
                         {{ wtf.form_field(form.login.username) }}
                         {{ wtf.form_field(form.login.password) }}
                         {{ wtf.form_field(form.login.remember_me) }}
@@ -33,6 +34,7 @@
                 <div class="card-body">
                     <h5 class="card-title">Create a new profile</h5>
                     <form action="", method="POST" novalidate>
+                        {{ form.csrf_token }}
                         {{ wtf.form_field(form.register.first_name) }}
                         {{ wtf.form_field(form.register.last_name) }}
                         {{ wtf.form_field(form.register.username) }}

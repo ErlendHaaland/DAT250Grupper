@@ -1,6 +1,7 @@
 from flask import Flask, g
 from config import Config
 from flask_bootstrap import Bootstrap
+from flask_wtf.csrf import CSRFProtect
 #from flask_login import LoginManager
 import sqlite3
 import os
@@ -9,6 +10,8 @@ import os
 app = Flask(__name__)
 Bootstrap(app)
 app.config.from_object(Config)
+csrf = CSRFProtect()
+csrf.init_app(app)
 
 # TODO: Handle login management better, maybe with flask_login?
 #login = LoginManager(app)
@@ -30,9 +33,9 @@ def init_db():
         db.commit()
 
 # perform generic query, not very secure yet
-def query_db(query, one=False):
+def query_db(query, args=(), one=False):
     db = get_db()
-    cursor = db.execute(query)
+    cursor = db.execute(query, args)
     rv = cursor.fetchall()
     cursor.close()
     db.commit()

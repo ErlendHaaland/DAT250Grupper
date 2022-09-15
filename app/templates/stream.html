@@ -8,6 +8,7 @@
                 <div class="card-body">
                     <h1>Share something</h1>
                     <form action="" method="POST" novalidate enctype="multipart/form-data">
+                        {{ form.csrf_token }}
                         {{ wtf.form_field(form.content) }}
                         {{ wtf.form_field(form.image) }}
                         {{ wtf.form_field(form.submit, class="btn btn-primary") }}
@@ -31,7 +32,7 @@
                     {% if post.image %}
                     <img src="{{'/static/uploads/' + post.image}}" class="card-img-bottom">
                     {% endif %}
-                    <a href={{ url_for('comments', username=username, p_id=post.id) }}><span class="fa fa-comment"></span>&nbsp;Comments({{post.cc}})</a>
+                    <a href={{ url_for('comments', username=username, p_id=post.id )}}><span class="fa fa-comment"></span>&nbsp;Comments({{post.cc}})</a>
                 </div>
             </div>
         </div>

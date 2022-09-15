@@ -58,6 +58,7 @@
                     <!--Edit details-->
                     <div id="edit-details" style="display: none;">
                         <form action="" method="POST" novalidate>
+                            {{ form.csrf_token }}
                             {{ wtf.form_field(form.education) }}
                             {{ wtf.form_field(form.employment) }}
                             {{ wtf.form_field(form.music) }}
