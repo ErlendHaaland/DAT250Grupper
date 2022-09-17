@@ -21,10 +21,14 @@ def index():
         else:
             flash('Sorry, wrong password!')
 
+    # Runs validation check after "Sign Up" button is pressed.
     elif form.register.is_submitted() and form.register.submit.data:
-        query_db("INSERT INTO Users (username, first_name, last_name, password) VALUES(?, ?, ?, ?)", [form.register.username.data, form.register.first_name.data, form.register.last_name.data, form.register.password.data])
+        if form.validate():
+            query_db("INSERT INTO Users (username, first_name, last_name, password) VALUES(?, ?, ?, ?)", [form.register.username.data, form.register.first_name.data, form.register.last_name.data, form.register.password.data])
+            return redirect(url_for('index'))
         
-        return redirect(url_for('index'))
+        flash("Error during registration, one or more fields do not meet minimum requirements.")
+        
     return render_template('index.html', title='Welcome', form=form)
 
 
