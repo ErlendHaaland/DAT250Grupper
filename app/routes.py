@@ -1,6 +1,6 @@
-from flask import render_template, flash, redirect, url_for, request
-from werkzeug import exceptions
+from flask import render_template, flash, redirect, url_for
 from werkzeug.utils import secure_filename
+from werkzeug.security import generate_password_hash, check_password_hash
 from app import app, query_db
 from app.forms import IndexForm, PostForm, FriendsForm, ProfileForm, CommentsForm
 from datetime import datetime
@@ -13,12 +13,11 @@ import os
 @app.route('/index', methods=['GET', 'POST'])
 def index():
     form = IndexForm()
-
     if form.login.is_submitted() and form.login.submit.data:
         user = query_db("SELECT * FROM Users WHERE username = ?", [form.login.username.data], one=True)
         if user is None:
             flash('Sorry, this user does not exist!')
-        elif user['password'] == form.login.password.data:
+        elif check_password_hash(user['password'], form.login.password.data):
             return redirect(url_for('stream', username=form.login.username.data))
         else:
             flash('Sorry, wrong password!')
@@ -26,7 +25,7 @@ def index():
     # Runs validation check after "Sign Up" button is pressed.
     elif form.register.is_submitted() and form.register.submit.data:
         if form.validate():
-            query_db("INSERT INTO Users (username, first_name, last_name, password) VALUES(?, ?, ?, ?)", [form.register.username.data, form.register.first_name.data, form.register.last_name.data, form.register.password.data])
+            query_db("INSERT INTO Users (username, first_name, last_name, password) VALUES(?, ?, ?, ?)", [form.register.username.data, form.register.first_name.data, form.register.last_name.data, generate_password_hash(form.register.password.data)])
             return redirect(url_for('index'))
         
         flash("Error during registration, one or more fields do not meet minimum requirements.")
