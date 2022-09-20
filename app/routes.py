@@ -1,4 +1,6 @@
 from flask import render_template, flash, redirect, url_for, request
+from werkzeug import exceptions
+from werkzeug.utils import secure_filename
 from app import app, query_db
 from app.forms import IndexForm, PostForm, FriendsForm, ProfileForm, CommentsForm
 from datetime import datetime
@@ -32,18 +34,24 @@ def index():
     return render_template('index.html', title='Welcome', form=form)
 
 
+def allowed_file(filename):
+    return '.' in filename and \
+            filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
+
+
 # content stream page
 @app.route('/stream/<username>', methods=['GET', 'POST'])
 def stream(username):
     form = PostForm()
     user = query_db("SELECT * FROM Users WHERE username=?", [username], one=True)
     if form.is_submitted():
-        if form.image.data:
-            path = os.path.join(app.config['UPLOAD_PATH'], form.image.data.filename)
+        if form.image.data and allowed_file(form.image.data.filename):
+            path = os.path.join(app.config['UPLOAD_PATH'], secure_filename(form.image.data.filename))
             form.image.data.save(path)
+            query_db("INSERT INTO Posts (u_id, content, image, creation_time) VALUES(?, ?, ?, ?)", [user['id'], form.content.data, secure_filename(form.image.data.filename), datetime.now()])
+        else:
+            flash("Invalid upload file, please ensure you only upload images with: .png, .jpeg or .jpg, extensions.")
 
-
-        query_db("INSERT INTO Posts (u_id, content, image, creation_time) VALUES(?, ?, ?, ?)", [user['id'], form.content.data, form.image.data.filename, datetime.now()])
         return redirect(url_for('stream', username=username))
 
     posts = query_db("SELECT p.*, u.*, (SELECT COUNT(*) FROM Comments WHERE p_id=p.id) AS cc FROM Posts AS p JOIN Users AS u ON u.id=p.u_id WHERE p.u_id IN (SELECT u_id FROM Friends WHERE f_id=?1) OR p.u_id IN (SELECT f_id FROM Friends WHERE u_id=?1) OR p.u_id=?1 ORDER BY p.creation_time DESC", [user['id']])
