@@ -1,2 +1,3 @@
 FLASK_APP=socialinsecurity.py
 FLASK_ENV=development
+FLASK_RUN_CERT= adhoc
