@@ -11,3 +11,4 @@ Werkzeug==0.15.6
 wincertstore==0.2
 WTForms==2.2.1
 python-dotenv
+pyOpenSSL
