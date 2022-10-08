@@ -2,12 +2,10 @@ from flask import render_template, flash, redirect, url_for, abort
 from flask_login import LoginManager, login_required, login_user, logout_user, fresh_login_required
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
-from __init__ import app, query_db
-from forms import IndexForm, PostForm, FriendsForm, ProfileForm, CommentsForm
+from app import app, query_db
+from app.forms import IndexForm, PostForm, FriendsForm, ProfileForm, CommentsForm, LoginForm, is_safe_url, User
 from datetime import datetime
 import os
-from forms import LoginForm, is_safe_url, User
-
 
 # this file contains all the different routes, and the logic for communicating with the database
 

@@ -24,11 +24,11 @@
                     <ul class="list-group list-group-flush">
                         {% for friend in friends %}
                         <li class="list-group-item"><a href={{url_for('profile', username=friend.username)}}>{{friend.username}}</a></li>
-                        {% end for %}
+                        {% endfor %}
                     </ul>
                 </div>
             </div>
         </div>
     </div>
 </div>
-{% end block %}
+{% endblock %}

@@ -8,7 +8,7 @@ from urllib.parse import urlparse, urljoin
 from flask import request, url_for, redirect
 from flask_login import UserMixin
 
-
+# FLASK_RUN_CERT= adhoc
 # defines all forms in the application, these will be instantiated by the template,
 # and the routes.py will read the values of the fields
 # TODO: Add validation, maybe use wtforms.validators??

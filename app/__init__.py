@@ -1,12 +1,15 @@
 import os
 import sqlite3
 
-from config import Config
+
 from flask import Flask, g
+from config import Config
 from flask_bootstrap import Bootstrap
 from flask_wtf.csrf import CSRFProtect
 
+
 # create and configure app
+
 app = Flask(__name__)
 Bootstrap(app)
 app.config.from_object(Config)
@@ -62,3 +65,4 @@ if not os.path.exists(app.config['DATABASE']):
 if not os.path.exists(app.config['UPLOAD_PATH']):
     os.mkdir(app.config['UPLOAD_PATH'])
 
+from app import routes
