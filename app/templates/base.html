@@ -50,7 +50,7 @@
             <a class="btn btn-outline-dark" href={{url_for('index')}} role="button">Log Out</a>
             </div>
         </nav>
-        {% endif %}
+        {% end if %}
 
         {% with messages = get_flashed_messages() %}
         {% if messages %}
@@ -61,9 +61,9 @@
                 <span aria-hidden="true">&times;</span>
             </button>
         </div>
-        {% endfor %}
-        {% endif %}
-        {% endwith %}
+        {% end for %}
+        {% end if %}
+        {% end with %}
 
         {% block content %}{% endblock %}
         <!-- Optional JavaScript -->
