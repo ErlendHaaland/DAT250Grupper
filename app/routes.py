@@ -1,13 +1,13 @@
-from flask import render_template, flash, redirect, url_for, abort
-from flask_login import LoginManager, login_required, login_user, logout_user, fresh_login_required
+from flask import render_template, flash, redirect, url_for
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 from app import app, query_db
-from app.forms import IndexForm, PostForm, FriendsForm, ProfileForm, CommentsForm, LoginForm, is_safe_url, User
+from app.forms import IndexForm, PostForm, FriendsForm, ProfileForm, CommentsForm
 from datetime import datetime
 import os
 
 # this file contains all the different routes, and the logic for communicating with the database
+
 
 # home page/login/registration
 @app.route('/', methods=['GET', 'POST'])
@@ -43,7 +43,6 @@ def allowed_file(filename):
 
 # content stream page
 @app.route('/stream/<username>', methods=['GET', 'POST'])
-@login_required
 def stream(username):
     form = PostForm()
     user = query_db("SELECT * FROM Users WHERE username=?", [username], one=True)
@@ -67,7 +66,6 @@ def stream(username):
 
 # comment page for a given post and user.
 @app.route('/comments/<username>/<int:p_id>', methods=['GET', 'POST'])
-@login_required
 def comments(username, p_id):
     form = CommentsForm()
     if form.is_submitted():
@@ -85,7 +83,6 @@ def comments(username, p_id):
 
 # page for seeing and adding friends
 @app.route('/friends/<username>', methods=['GET', 'POST'])
-@login_required
 def friends(username):
     form = FriendsForm()
     user = query_db("SELECT * FROM Users WHERE username=?", [username], one=True)
@@ -103,7 +100,6 @@ def friends(username):
 
 # see and edit detailed profile information of a user
 @app.route('/profile/<username>', methods=['GET', 'POST'])
-@login_required
 def profile(username):
     form = ProfileForm()
     if form.is_submitted():
@@ -115,51 +111,3 @@ def profile(username):
 
     user = query_db("SELECT * FROM Users WHERE username=?", [username], one=True)
     return render_template('profile.html', title='profile', username=username, user=user, form=form)
-
-
-# flask login setup
-login_manager = LoginManager()
-login_manager.init_app(app)
-login_manager.login_view = "login"
-login_manager.session_protection = "strong"
-# login_manager.anonymous_user = MyAnonymousUser # if we want to restrict users who are not logged in
-
-
-# callback to reload the user objext
-@login_manager.user_loader
-def load_user(user_id):
-    return User(user_id)
-
-
-@app.route("/settings")
-@login_required
-def settings():
-    pass
-
-
-# Method to log in user
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    form = LoginForm()
-    # Logging in, and confirms that the user is part of the class User
-    if form.validate_on_submit():
-        userpass = form.password.data
-        username = form.username.data
-        user = User(username)
-        login_user(user)
-        flash('Logged in successfully!')
-        # the line below, ads a simple but effective 'rememer_me', aka cookie, which acording to flask_login, is tamperproof
-        login_user(user, remember=True, force=False, fresh=True)
-        # The if below, checks if the url is safe, so that login is not vonerable
-        # next = flask.request.args.get('next') # imported from forms.py instead
-        if not is_safe_url(next):
-            return abort(400)
-        return redirect('/')
-    return render_template('login.html', title='Sign in', form=form)
-
-
-@app.route("/logout")
-@login_required
-def logout():
-    logout_user()
-    return redirect('/')

@@ -18,7 +18,6 @@ csrf.init_app(app)
 
 
 # TODO: Handle login management better, maybe with flask_login?
-# located in routes.py
 
 # get an instance of the db
 def get_db():

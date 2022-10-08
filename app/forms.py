@@ -1,27 +1,17 @@
-# from re import RegexFlag
-from flask_wtf import FlaskForm, Form
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, FormField, TextAreaField, FileField, \
-    HiddenField
+from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, FormField, TextAreaField, FileField
 from wtforms.fields.html5 import DateField
 from wtforms.validators import Regexp, EqualTo
-from urllib.parse import urlparse, urljoin
-from flask import request, url_for, redirect
-from flask_login import UserMixin
 
-# FLASK_RUN_CERT= adhoc
-# defines all forms in the application, these will be instantiated by the template,
-# and the routes.py will read the values of the fields
 # TODO: Add validation, maybe use wtforms.validators??
-# used the flask function @login_required, which require a user to be logged in reasently to do the task.
-#   If not, they are 'unauthorized, and must login again.
 # TODO: There was some important security feature that wtforms provides, but I don't remember what; implement it
+
 
 class LoginForm(FlaskForm):
     username = StringField('Username', render_kw={'placeholder': 'Username'})
     password = PasswordField('Password', render_kw={'placeholder': 'Password'})
     remember_me = BooleanField(
         'Remember me')  # TODO: It would be nice to have this feature implemented, probably by using cookies
-    # See forms.py line 84
     submit = SubmitField('Sign In')
 
 
@@ -71,38 +61,3 @@ class ProfileForm(FlaskForm):
     submit = SubmitField('Update Profile')
 
 
-# method to verify that the url is safe
-def is_safe_url(target):
-    ref_url = urlparse(request.host_url)
-    test_url = urlparse(urljoin(request.host_url, target))
-    return test_url.scheme in ('http', 'https') and ref_url.netloc == test_url.netloc
-
-
-def get_redirect_target():
-    for target in request.args.get('next'), request.referrer:
-        if not target:
-            continue
-        if is_safe_url(target):
-            return target
-
-
-class RedirectForm(Form):
-    next = HiddenField()
-
-    def __init__(self, *args, **kwargs):
-        Form.__init__(self, *args, **kwargs)
-        if not self.next.data:
-            self.next.data = get_redirect_target() or ''
-
-    def redirect(self, endpoint='index', **values):
-        if is_safe_url(self.next.data):
-            return redirect(self.next.data)
-        target = get_redirect_target()
-        return redirect(target or url_for(endpoint, **values))
-# code considered publci domain, origined from the url:https://web.archive.org/web/20120501162055/http://flask.pocoo.org/snippets/63/
-
-
-# the User model
-class User(UserMixin):
-    def __init__(self, id):
-        self.id = id
