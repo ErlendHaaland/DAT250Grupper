@@ -12,3 +12,5 @@ wincertstore==0.2
 WTForms==2.2.1
 python-dotenv
 pyOpenSSL
+
+Flask-login==0.3.2
